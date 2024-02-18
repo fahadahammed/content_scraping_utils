@@ -1,5 +1,7 @@
-from base64 import urlsafe_b64encode
+import sys
+sys.path.append('../')
 
+from base64 import urlsafe_b64encode
 from src.utility_functions import download_a_file, article_file_exists
 from src.utility_functions import the_requester, json_output_generator, extract_file_extension
 
@@ -14,14 +16,15 @@ class CNNSite:
 
     def read_content_information(self):
         the_rquester_response = the_requester(the_url=self.the_url)
-        if the_rquester_response.get("url_response").status_code // 100 == 2:
-            return {
-                "content": the_rquester_response.get("url_response").content,
-                "last_modified": the_rquester_response.get("url_response").headers.get("X-Last-Modified"),
-                # "url": the_rquester_response.get("url"),
-                # "unique_id": the_rquester_response.get("unique_id")
-            }
-        else:
+        try:
+            if the_rquester_response.get("url_response").status_code // 100 == 2:
+                return {
+                    "content": the_rquester_response.get("url_response").content,
+                    "last_modified": the_rquester_response.get("url_response").headers.get("X-Last-Modified"),
+                }
+            else:
+                return False
+        except AttributeError:
             return False
 
     def parse_data(self, content_information=None):
@@ -35,6 +38,7 @@ class CNNSite:
 
             url = soup.find("meta", property="og:url").get("content")
             unique_id = urlsafe_b64encode(url.encode("utf8")).decode("utf8")
+
             if article_file_exists(unique_id=unique_id):
                 return False
 
@@ -55,14 +59,15 @@ class CNNSite:
             list_of_img_tags_content = [
                 {
                     "image_url": soup.find("meta", property="og:image").get("content"),
-                    "image_name_on_save": f'{content_information.get("unique_id")}.{extract_file_extension(soup.find("meta", property="og:image").get("content"))}'
+                    "image_name_on_save": f'{to_return.get("unique_id")}.{extract_file_extension(soup.find("meta", property="og:image").get("content"))}'
                 }
             ]
+            print(list_of_img_tags_content)
             if img_tags:
                 for indx, img in enumerate(img_tags):
                     image_url = img["src"]
                     image_extension = extract_file_extension(image_url)
-                    image_name_on_save = f'{content_information.get("unique_id")}.{indx}.{image_extension}'
+                    image_name_on_save = f'{to_return.get("unique_id")}.{indx}.{image_extension}'
                     list_of_img_tags_content.append({
                         "image_url": image_url,
                         "image_name_on_save": image_name_on_save
