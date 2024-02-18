@@ -79,8 +79,12 @@ $ make test
 
 The purpose of choosing CNN is because it seems straight forward and without 
 any issue involved with rendering the conents via JS. If that was the case and I could give enough 
-time I might have choosen other ways to handle it. 
+time I might have choosen other ways to handle it.
+- CNN sites has standard structure to rely with my code until it changed.
+- Tried to handle canonical url to not to overwrite output file of same link.
 
 ## Prospect
 - Reusuable code in `src/`
 - Working version of other scraping factors involved PDF, Video, html table etc.
+- Broken branch with PDF extraction code in feature/pdf-1 using PyPDF2 but it seems not fully relibale now.
+- Time obstructed me to explore with Video content.
