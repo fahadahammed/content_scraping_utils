@@ -23,19 +23,16 @@ def user_agent_switcher():
 def the_requester(the_url):
     to_return = {}
     headers = {'user-agent': user_agent_switcher()}
-    url_response = requests.get(
-        url=the_url, allow_redirects=True,
-        timeout=1, headers=headers
-    )
-    if url_response.status_code // 100 == 2:
-        to_return["url_response"] = url_response
-        # if url_response.history:
-        #     to_return["url"] = url_response.url
-        #     to_return["unique_id"] = soup.find("meta", "og:url").get("content")
-        # else:
-        #     to_return["url"] = the_url
-        #     to_return["unique_id"] = urlsafe_b64encode(the_url.encode("utf8")).decode("utf8")
-    else:
+    try:
+        url_response = requests.get(
+            url=the_url, allow_redirects=True,
+            timeout=1, headers=headers
+        )
+        if url_response.status_code // 100 == 2:
+            to_return["url_response"] = url_response
+        else:
+            return False
+    except requests.Timeout:
         return False
     return to_return
 
