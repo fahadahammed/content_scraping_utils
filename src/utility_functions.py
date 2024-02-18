@@ -54,11 +54,14 @@ def json_output_generator(json_data, the_file_name, output_location="output"):
     return True
 
 
-def download_a_file(the_url, destination_filename, output_location="output"):
+def download_a_file(the_url, destination_filename=None, output_location="output"):
     try:
         os.mkdir(output_location)
     except FileExistsError:
         pass
+
+    if not destination_filename:
+        destination_filename = urlparse(the_url).path.split('/')[-1]
 
     headers = {'user-agent': user_agent_switcher()}
     url_response = requests.get(
@@ -68,7 +71,9 @@ def download_a_file(the_url, destination_filename, output_location="output"):
     if url_response.status_code == 200:
         with open(f"{output_location}/{destination_filename}", 'wb') as f:
             f.write(url_response.content)
-        return f"File downloaded successfully as '{destination_filename}'"
+        return {
+            "destination_filename": destination_filename
+        }
     else:
         return False
 
